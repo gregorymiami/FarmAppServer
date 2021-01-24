@@ -1,0 +1,2 @@
+-- setup node js with typescript
+https://basarat.gitbook.io/typescript/nodejs
