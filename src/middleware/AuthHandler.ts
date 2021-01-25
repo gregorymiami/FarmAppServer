@@ -43,17 +43,21 @@ class AuthHandler {
             response.locals["token"] = token;
             response.locals["user"] = user;
             next();
+            return;
           })
-          .catch(error)
+          .catch(err => {
+            next(new HttpException(400, `authentication error on path ${request.path}: ${err}.`));
+            return;
+          });
         });
       } catch (error) {
         next(new HttpException(400, `authentication error on path ${request.path}: ${error}.`));
         return;
       }
+    } else {
+      next(new HttpException(400, `authentication error on path ${request.path}. No cookies or auth token found.`));
+      return;
     }
-
-    next(new HttpException(400, `authentication error on path ${request.path}. No cookies or auth token found.`));
-    return;
   }
 }
 
