@@ -1,21 +1,38 @@
-import express, { NextFunction } from 'express';
-import bodyParser from 'body-parser';
+import redis from 'redis';
+import 'dotenv/config';
+import {
+  cleanEnv, str, port
+} from 'envalid';
+import { App } from './app';
+import 'reflect-metadata';
+import { createConnection } from 'typeorm';
+import config from './ormconfig';
 
-const loggerMiddleware: express.RequestHandler = (request: express.Request, response: express.Response, next: NextFunction) => {
-  console.log(`${request.method} ${request.path}`);
-  next();
+cleanEnv(process.env, {
+  APP_PORT: port(),
+  REDIS_HOST: str(),
+  REDIS_PORT: port(),
+  JWT_SECRET: str()
+});
+
+const {
+  APP_PORT,
+  REDIS_HOST,
+  REDIS_PORT
+} = process.env;
+
+if (!REDIS_PORT || !APP_PORT) {
+  process.exit();
 }
- 
-const app: express.Application = express();
-app.use(bodyParser);
-app.use(loggerMiddleware);
- 
-app.get('/', (request: express.Request, response: express.Response) => {
-  response.send('Hello world!');
-});
 
-app.post('/', (request: express.Request, response: express.Response) => {
-  response.send(request.body);
-});
- 
-app.listen(5000);
+(async () => {
+  try {
+    await createConnection(config);
+    const redisClient = redis.createClient({port: parseInt(REDIS_PORT), host: REDIS_HOST});
+    const app = new App(parseInt(APP_PORT), redisClient);
+    app.listen();
+  } catch (error) {
+    console.log('Error while connecting to the database', error);
+    return error;
+  }
+})();

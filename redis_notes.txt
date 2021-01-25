@@ -1,0 +1,4 @@
+- ping redis server
+redis-cli ping
+
+Note: redis runs on port 6379 on localhost by default

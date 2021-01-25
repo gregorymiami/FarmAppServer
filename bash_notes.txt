@@ -1,0 +1,15 @@
+- Setting environmental variables
+export DB_USER=postgres
+
+- setting env variables in a bash script
+source ./script.sh
+
+- look for running processes
+ps auxwww | grep [identifying text]
+example:
+ps auxwww | grep postgres
+
+- Find command
+find [path] -name [name of file]
+example:
+find / -name uuid-ossp

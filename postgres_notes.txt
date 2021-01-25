@@ -1,0 +1,91 @@
+-----------------------------------
+Postgres
+-----------------------------------
+- Downloading Postgres
+sudo apt update
+sudo apt install postgresql postgresql-contrib
+
+
+- Calling PSQL
+	- Switching accounts (the postgres account is created upon installation)
+		- there is a coorespondence from linux username to db username
+
+sudo -i -u postgres
+psql
+
+OR
+
+sudo -u postgres psql
+
+Note: postgres runs on port 5432 by default
+
+- Connecting to PSQL Remotely
+psql -U <user> -h <host> -p <port> <database>
+	- Example: psql -U postgres -h platfomtrial.ccvix5lkrm9n.us-east-2.rds.amazonaws.com -p 5432 platform
+
+
+- Basic Postgres Commands
+	-- Quiting psql
+		\q
+
+	-- Viewing tables
+		\dt
+
+	-- Connect to a new db
+		\c
+
+	-- List all roles
+		\du
+
+	-- List all dbs
+		\list
+
+	-- View columns in table
+		\d+ <table name>
+
+  -- view port number
+    \conninfo
+
+  -- view extensions
+    \dx
+
+    OR
+
+    select * from pg_extension;
+
+- Creating a Database
+CREATE DATABASE yourdbname;
+
+- Creating a User
+CREATE USER youruser WITH ENCRYPTED PASSWORD 'yourpass';
+
+- Granting Privileges on a Database
+GRANT ALL PRIVILEGES ON DATABASE yourdbname TO youruser;
+
+- Granting Privileges on Sequences
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO basic;
+
+- Dropping All Tables in a Schema
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO public;
+
+- Drop a table
+DROP TABLE events;
+
+- Grant privileges on a table
+GRANT ALL PRIVILEGES ON events TO basic;
+
+- Drop Database
+DROP DATABASE IF EXISTS <name>
+
+
+-- Postgres Service Commands (linux)
+sudo service postgresql stop
+sudo service postgresql restart
+sudo service postgresql start
+
+-- Postgres commands (mac)
+(have to be logged in as user for postgres (not root))
+pg_ctl -D /Library/PostgreSQL/12/data status 
