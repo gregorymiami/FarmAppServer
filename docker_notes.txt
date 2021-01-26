@@ -8,11 +8,14 @@ sudo apt install docker.io
 
 - Build Docker Image
 sudo docker build -t [desired image name] .
-
+Note: the image name may be wrapped in quotes
+example:
+docker build -t "webdev:Dockerfile" .
 
 - Run Docker Container
 sudo docker run -p 8082:8082 -d [image name specified above]
 	- The port:port mapping maps a port on the host machine to a port in the docker container.
+use --network flag to specify a network to run on 
 
 
 - Check Running Docker Containers
@@ -41,8 +44,33 @@ docker-compose run postgres
 
 - run all services in a docker-compose file
 docker-compose up
+use the -d to detach from the containers after deploying
+use --build to build the images freshly
 
 - run commands inside a docker container
 docker exec [container name] [command]
 example:
 docker exec -it farmdb_postgres_run_7d08fc522868 bash
+
+- list docker networks
+docker network ls
+
+- create a docker network
+docker network create --driver [driver name] [network name]
+example:
+docker network create --driver bridge alpine-net
+note: bridge is the default driver
+
+- connect a container to a network
+docker network connect [network name] [container name]
+example:
+docker network connect bridge alpine4
+
+- inspect a network
+docker network inspect [network name]
+docker network inspect bridge
+
+How to build a docker compose file: https://www.techrepublic.com/article/how-to-build-a-docker-compose-file/
+
+Dockerfile Basics: https://www.techrepublic.com/article/how-to-use-dockerfiles/
+

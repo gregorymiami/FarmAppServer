@@ -1,2 +1,5 @@
 - Unstage all files:
 git reset
+
+- set upstream branch
+git branch --set-upstream-to origin/master
