@@ -35,6 +35,8 @@ services:
   server:
     container_name: farm_server
     build: .
+    ports: 
+    - "3050:3050"
     networks:
       - farmnet
 
