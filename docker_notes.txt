@@ -11,6 +11,10 @@ sudo docker build -t [desired image name] .
 Note: the image name may be wrapped in quotes
 example:
 docker build -t "webdev:Dockerfile" .
+use -f to specify the location of a Dockerfile that isn't in the current directory
+example:
+docker build --no-cache -t helloapp:v2 -f dockerfiles/Dockerfile context
+docker build --no-cache -t [image name] -f [Dockerfile path] [contextual directory]
 
 - Run Docker Container
 sudo docker run -p 8082:8082 -d [image name specified above]
