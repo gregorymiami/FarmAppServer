@@ -86,32 +86,34 @@ class UserController {
     let tokenData: TokenData;
 
     this.userRepository.findOne({ where: { email: req.body.email} }).then(result => {
-        if (!result) {
-            next(new HttpException(400, `The email or password is incorrect.`));
-            return;
-        }
-        user = result;
-        return bcrypt.compare(req.body.password, user.password);
+      if (!result) {
+        console.log(`No user with email ${req.body.email} found in database.`);
+        throw `The email or password is incorrect.`;
+      }
+      user = result;
+      return bcrypt.compare(req.body.password, user.password);
     }).then(result => {
-        if (!result) {
-            throw "email or password is incorrect.";
-        }
+      if (!result) {
+        console.log(`encrypted password check failed`);
+        throw "email or password is incorrect.";
+      }
 
-        let payload: TokenPayload = { userIdentifier: user.identifier };
-        tokenData = createToken(payload);
-        return this.redisClient.set(tokenData.token, user.identifier);
+      let payload: TokenPayload = { userIdentifier: user.identifier };
+      tokenData = createToken(payload);
+      return this.redisClient.set(tokenData.token, user.identifier);
     }).then(redis_set_result => {
-        if (!redis_set_result) {
-            throw "An error occured during authentication. Please try again later.";
-        }
-
-        user.password = "";
-        res.setHeader('Set-Cookie', [this.createCookie(tokenData)]);
-        res.status(200).json({user: user});
+      if (!redis_set_result) {
+        console.log(`Could not set token in redis.`);
+        throw "An error occured during authentication. Please try again later.";
+      }
+      
+      user.password = "";
+      res.setHeader('Set-Cookie', [this.createCookie(tokenData)]);
+      res.status(200).json({user: user});
     }).catch(err => {
-        console.log(`Login user error: ${err}`);
-        next(new HttpException(400, `Login user error: ${String(err)}`));
-        return;
+      console.log(`Login user error: ${err}`);
+      next(new HttpException(400, `Login user error: ${String(err)}`));
+      return;
     });
   };
 
