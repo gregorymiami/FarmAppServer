@@ -70,6 +70,7 @@ class UserController {
           emailVerified: false,
           role: AppRole.EXTERNAL,
       });
+      user.email = user.email.toLowerCase();
       await this.userRepository.save(user);
       return user;
     }).then(saved_user => {
