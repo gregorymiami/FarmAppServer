@@ -61,16 +61,16 @@ class UserController {
   }
 
   registerUser = (request: express.Request, response: express.Response, next: express.NextFunction) => {
-    bcrypt.hash(request.body.password, salt)
+    const body: RegisterUserDto = request.body;
+    bcrypt.hash(body.password, salt)
     .then(async encrypted_password => {
       let user: User = this.userRepository.create({
-          userName: request.body.username,
+          userName: body.username,
           password: encrypted_password,
-          email: request.body.email,
+          email: body.email.toLowerCase(),
           emailVerified: false,
           role: AppRole.EXTERNAL,
       });
-      user.email = user.email.toLowerCase();
       await this.userRepository.save(user);
       return user;
     }).then(saved_user => {
@@ -85,14 +85,15 @@ class UserController {
   loginUser = (req: express.Request, res: express.Response, next: express.NextFunction) => {
     let user: User;
     let tokenData: TokenData;
+    let body: LoginUserDto = req.body;
 
-    this.userRepository.findOne({ where: { email: req.body.email} }).then(result => {
+    this.userRepository.findOne({ where: { email: body.email.toLowerCase()} }).then(result => {
       if (!result) {
-        console.log(`No user with email ${req.body.email} found in database.`);
+        console.log(`No user with email ${body.email} found in database.`);
         throw `The email or password is incorrect.`;
       }
       user = result;
-      return bcrypt.compare(req.body.password, user.password);
+      return bcrypt.compare(body.password, user.password);
     }).then(result => {
       if (!result) {
         console.log(`encrypted password check failed`);
